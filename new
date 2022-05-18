@@ -1,22 +1,17 @@
-class Counter:
-    def __init__(self, min_value=0, max_value=100, get=None):
-        self.min_value = min_value
-        self.max_value = max_value
-        self.get = get
-        if self.get == None:
-            self.get = min_value
-    def increase(self):
-        if self.get < self.max_value and self.get >= self.min_value:
-            self.get += 1
-        else:
-            pass
+import sqlite3
+from flask import Flask, render_template
 
+app = Flask(__name__)
 
-    def get_current_value(self):
-        return self.get
+@app.route('/')
+def get_unique_name():
+    curso = sqlite3.connect('example.db')
+    cur = curso.cursor()
+    sql = ('SELECT FirstName from customers Group by FirstName ')
+    cur.execute(sql)
+    labels = cur.fetchall()
+    labels = [i[0] for i in labels]
+    curso.close()
+    return render_template('index.html', labels=labels)
 
-
-x = Counter(min_value=50, max_value=100)
-
-print(x.increase())
-print(x.get_current_value())
+app.run(debug=True)
